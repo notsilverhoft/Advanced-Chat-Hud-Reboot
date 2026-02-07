@@ -29,6 +29,8 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Style;
+import org.joml.Matrix3x2f;
+import org.joml.Matrix3x2fStack;
 import net.minecraft.text.Text;
 import net.minecraft.text.TextColor;
 import net.minecraft.util.Identifier;
@@ -246,10 +248,12 @@ public class ChatWindow {
     }
 
     public int getPaddedWidth() {
-        return (getScaledWidth()
+        int width = (getScaledWidth()
                 - HudConfigStorage.General.LEFT_PAD.config.getIntegerValue()
                 - HudConfigStorage.General.RIGHT_PAD.config.getIntegerValue()
                 - headOffset());
+        // Divide by scale to get logical width (more text fits when scale < 1, less when scale > 1)
+        return (int) Math.floor(width / getScale());
     }
 
     private int headOffset() {
@@ -257,11 +261,11 @@ public class ChatWindow {
     }
 
     private int getActualY(int y) {
-        return (int) Math.ceil(this.getConvertedY() / getScale()) - y;
+        return this.getConvertedY() - y;
     }
 
     private int getLeftX() {
-        return (int) Math.ceil(this.getConvertedX() / getScale());
+        return this.getConvertedX();
     }
 
     private int getPaddedLeftX() {
@@ -289,11 +293,11 @@ public class ChatWindow {
     }
 
     private int getScaledHeight() {
-        return (int) Math.ceil(getConvertedHeight() / getScale());
+        return getConvertedHeight();
     }
 
     private int getScaledWidth() {
-        return (int) Math.ceil(getConvertedWidth() / getScale());
+        return getConvertedWidth();
     }
 
     private int getBarHeight() {
@@ -301,7 +305,7 @@ public class ChatWindow {
     }
 
     private int getScaledBarHeight() {
-        return (int) Math.ceil(14 * getScale());
+        return 14;
     }
 
     public boolean isMouseOver(double mouseX, double mouseY) {
@@ -683,11 +687,24 @@ public class ChatWindow {
             drawContext.drawTexture(RenderPipelines.GUI_TEXTURED, texture, headX, headY, 8, 8, 8, 8, 8, 8, 64, 64);
         }
 
+        // Apply scale to text rendering
+        float scale = (float) getScale();
+        int textX = renderRight ? pRX - lineWidth : pLX;
+        int textY = getActualY(y) + 1;
+        
+        Matrix3x2fStack matrices = drawContext.getMatrices();
+        matrices.pushMatrix();
+        matrices.translate(textX, textY);
+        matrices.scale(scale, scale);
+        matrices.translate(-textX, -textY);
+        
         drawContext.drawTextWithShadow(MinecraftClient.getInstance().textRenderer,
                 render.asOrderedText(),
-                renderRight ? pRX - lineWidth : pLX,
-                getActualY(y) + 1,
+                textX,
+                textY,
                 text.color());
+        
+        matrices.popMatrix();
     }
 
     public Style getText(double mouseX, double mouseY) {

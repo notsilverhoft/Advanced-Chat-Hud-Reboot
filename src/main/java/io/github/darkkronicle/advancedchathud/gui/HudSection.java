@@ -28,8 +28,11 @@ import io.github.darkkronicle.advancedchathud.tabs.CustomChatTab;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.input.MouseInput;
+import net.minecraft.client.util.InputUtil;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -129,7 +132,7 @@ public class HudSection extends AdvancedChatScreenSection {
                 if (message.getOwner().getEntry().getDisplayName() != null) {
                     data.append(message.getOwner().getEntry().getDisplayName());
                 } else {
-                    data.append(message.getOwner().getEntry().getProfile().getName());
+                    data.append(message.getOwner().getEntry().getProfile().name());
                 }
             }
             if (!data.build().getString().isBlank())  {
@@ -146,7 +149,7 @@ public class HudSection extends AdvancedChatScreenSection {
             });
             if (message.getOwner() != null) {
                 actions.put(Text.literal(StringUtils.translate("advancedchathud.context.messageowner")), (x, y) -> {
-                    getScreen().getChatField().setText("/msg " + message.getOwner().getEntry().getProfile().getName() + " ");
+                    getScreen().getChatField().setText("/msg " + message.getOwner().getEntry().getProfile().name() + " ");
                 });
             }
         }
@@ -167,7 +170,7 @@ public class HudSection extends AdvancedChatScreenSection {
             createContextMenu((int) mouseX, (int) mouseY);
             return true;
         }
-        if (menu != null && menu.onMouseClicked((int) mouseX, (int) mouseY, button)) {
+        if (menu != null && menu.onMouseClicked(new Click(mouseX, mouseY, new MouseInput(button, 0)), false)) {
             return true;
         }
         return WindowManager.getInstance().mouseClicked(getScreen(), mouseX, mouseY, button);
@@ -193,7 +196,8 @@ public class HudSection extends AdvancedChatScreenSection {
         if (amount < -1.0D) {
             amount = -1.0D;
         }
-        if (!Screen.hasShiftDown()) {
+        if (!InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow(), 340) &&
+            !InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow(), 344)) {
             amount *= 7.0D;
         }
 

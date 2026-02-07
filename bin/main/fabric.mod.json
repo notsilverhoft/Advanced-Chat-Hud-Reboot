@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 1,
+  "id": "advancedchathud",
+  "version": "${version}",
+  "name": "AdvancedChatHUD",
+  "description": "A chat HUD overhaul with chat tabs",
+  "authors": [
+    "DarkKronicle",
+    "EnricoMessall"
+  ],
+  "contact": {
+    "homepage": "https://arematics.com",
+    "sources": "https://github.com/Arematics/AdvancedChatHUD",
+    "issues": "https://github.com/Arematics/AdvancedChatHUD/issues"
+  },
+  "license": "MPL-v2",
+  "icon": "assets/advancedchathud/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "client": [
+      "io.github.darkkronicle.advancedchathud.AdvancedChatHud"
+    ]
+  },
+  "mixins": [
+    "advancedchathud.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.17.2",
+    "fabric": "*",
+    "minecraft": ">=1.21.8",
+    "malilib": ">=0.25.5",
+    "advancedchatcore": ">=1.5.12-1.21.8"
+  },
+  "custom": {
+    "acmodule": true,
+    "modmenu": {
+      "parent": {
+        "id": "advancedchatcore"
+      }
+    }
+  }
+}
