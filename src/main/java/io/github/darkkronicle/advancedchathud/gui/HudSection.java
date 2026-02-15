@@ -53,7 +53,10 @@ public class HudSection extends AdvancedChatScreenSection {
 
     private static final Identifier RESET_ICON =
             Identifier.of(AdvancedChatHud.MOD_ID, "textures/gui/chatwindow/reset_windows.png");
-
+            
+    private static final Identifier CENTER_ICON =
+            Identifier.of(AdvancedChatHud.MOD_ID, "textures/gui/chatwindow/center.png");
+            
     private ContextMenu menu = null;
 
     private ChatMessage message = null;
@@ -87,12 +90,15 @@ public class HudSection extends AdvancedChatScreenSection {
         }
         IconButton window = new IconButton(0, 0, 14, 32, ADD_ICON, (button) -> WindowManager.getInstance().onTabAddButton(IChatHud.getInstance().getTab()));
         IconButton reset = new IconButton(0, 0, 14, 32, RESET_ICON, (button) -> WindowManager.getInstance().reset());
+        IconButton center = new IconButton(0, 0, 14, 32, CENTER_ICON, (button) -> WindowManager.getInstance().center());
         if (left) {
             rows.add("tabs", window);
             rows.add("tabs", reset);
+            rows.add("tabs", center);
         } else {
             rows.add("tabs", window, 0);
             rows.add("tabs", reset, 0);
+            rows.add("tabs", center, 0);
         }
 
         if (getScreen().getChatField().getText().isEmpty()) {

@@ -56,6 +56,22 @@ public class WindowManager implements IRenderer, ResolutionEventHandler {
         windows.clear();
     }
 
+    public void center() {
+        int screenWidth = client.getWindow().getScaledWidth();
+        int screenHeight = client.getWindow().getScaledHeight();
+    
+        for (ChatWindow w : windows) {
+            int windowWidth = w.getConvertedWidth();
+            int windowHeight = w.getConvertedHeight();
+            
+            // Calculate center position
+            int centerX = (screenWidth - windowWidth) / 2;
+            int centerY = screenHeight / 2 + windowHeight / 2;
+            
+            w.setPosition(centerX, centerY);
+        }
+    }
+
     private void addWindow(ChatWindow window) {
         // Remove duplicates being spawned from somewhere
         windows.removeIf(w -> w == window);
@@ -217,6 +233,11 @@ public class WindowManager implements IRenderer, ResolutionEventHandler {
     }
 
     public boolean mouseClicked(Screen screen, double mouseX, double mouseY, int button) {
+        // Only handle left clicks (button 0)
+        if (button != 0) {
+            return false;
+        }
+    
         ChatWindow over = null;
         for (ChatWindow w : windows) {
             if (w.isMouseOver(mouseX, mouseY)) {
@@ -224,35 +245,41 @@ public class WindowManager implements IRenderer, ResolutionEventHandler {
                 break;
             }
         }
+    
         if (over == null) {
-            if (HudConfigStorage.General.VANILLA_HUD.config.getBooleanValue()
+           if (HudConfigStorage.General.VANILLA_HUD.config.getBooleanValue()
                     && overVanillaHud(mouseX, mouseY)) {
                 unSelect();
             }
             return false;
         }
-        if (button == 0) {
-            setSelected(over);
-            if (over.isMouseOverDragBar(mouseX, mouseY)) {
-                drag = over;
-                dragX = (int) mouseX - over.getConvertedX();
-                dragY = (int) mouseY - over.getConvertedY();
-                resize = false;
-            } else if (over.isMouseOverResize(mouseX, mouseY)) {
-                drag = over;
-                dragX = (int) mouseX - over.getConvertedWidth();
-                dragY = (int) mouseY + over.getConvertedHeight();
-                resize = true;
-            }
-            Style style = over.getText(mouseX, mouseY);
-            if (style != null && screen.handleTextClick(style)) {
-                return true;
-            }
-            if (over.onMouseClicked(mouseX, mouseY, button)) {
-                return true;
-            }
+    
+        setSelected(over);
+        if (over.isMouseOverDragBar(mouseX, mouseY)) {
+            drag = over;
+            dragX = (int) mouseX - over.getConvertedX();
+            dragY = (int) mouseY - over.getConvertedY();
+            resize = false;
+            return true;
+        } else if (over.isMouseOverResize(mouseX, mouseY)) {
+            drag = over;
+            dragX = (int) mouseX - over.getConvertedWidth();
+            dragY = (int) mouseY + over.getConvertedHeight();
+            resize = true;
+           return true;
         }
-        return true;
+    
+        Style style = over.getText(mouseX, mouseY);
+        if (style != null && screen.handleTextClick(style)) {
+            return true;
+        }
+    
+        if (over.onMouseClicked(mouseX, mouseY, button)) {
+            return true;
+        }
+    
+        // Window is under mouse but didn't handle the click, return false so buttons can handle it
+        return false;
     }
 
     private boolean overVanillaHud(double mouseX, double mouseY) {
