@@ -22,8 +22,8 @@ import io.github.darkkronicle.advancedchatcore.util.TextUtil;
 import io.github.darkkronicle.advancedchathud.config.Match;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import fi.dy.masa.malilib.render.GuiContext;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawContext;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -96,7 +96,7 @@ public class WidgetMatchEntry extends WidgetConfigListEntry<Match> {
     }
 
     @Override
-    public void renderEntry(int mouseX, int mouseY, boolean selected, DrawContext drawContext) {}
+    public void renderEntry(int mouseX, int mouseY, boolean selected, GuiContext drawContext) {}
 
     @Override
     public String getName() {
@@ -104,7 +104,7 @@ public class WidgetMatchEntry extends WidgetConfigListEntry<Match> {
     }
 
     public void save() {
-        entry.setPattern(name.getTextField().getText());
+        entry.setPattern(name.textField().getText());
     }
 
     private static class SaveListener implements ITextFieldListener<GuiTextFieldGeneric> {

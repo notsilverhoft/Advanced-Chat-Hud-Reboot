@@ -7,6 +7,7 @@
  */
 package io.github.darkkronicle.advancedchathud.gui;
 
+import fi.dy.masa.malilib.render.GuiContext;
 import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.util.StringUtils;
 import io.github.darkkronicle.advancedchatcore.gui.CleanButton;
@@ -16,7 +17,6 @@ import io.github.darkkronicle.advancedchatcore.util.TextUtil;
 import io.github.darkkronicle.advancedchathud.config.HudConfigStorage;
 import io.github.darkkronicle.advancedchathud.itf.IChatHud;
 import io.github.darkkronicle.advancedchathud.tabs.AbstractChatTab;
-import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.sound.SoundEvents;
 
@@ -36,7 +36,7 @@ public class TabButton extends CleanButton {
     }
 
     @Override
-    public void render(DrawContext drawContext, int mouseX, int mouseY, boolean selected) {
+    public void render(GuiContext drawContext, int mouseX, int mouseY, boolean selected) {
         int relMX = mouseX - x;
         int relMY = mouseY - y;
         hovered = relMX >= 0 && relMX <= width && relMY >= 0 && relMY <= height;
@@ -75,7 +75,7 @@ public class TabButton extends CleanButton {
     protected boolean onMouseClickedImpl(int mouseX, int mouseY, int mouseButton) {
         this.mc
                 .getSoundManager()
-                .play(PositionedSoundInstance.master(SoundEvents.UI_BUTTON_CLICK, 1.0F));
+                .play(PositionedSoundInstance.ui(SoundEvents.UI_BUTTON_CLICK, 1.0F));
         WindowManager.getInstance().onTabButton(tab);
         return true;
     }

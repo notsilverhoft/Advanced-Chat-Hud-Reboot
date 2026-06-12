@@ -54,7 +54,7 @@ public class GuiTabManager extends ConfigGuiListBase<ChatTab, WidgetTabEntry, Wi
     }
 
     @Override
-    public void resize(MinecraftClient mc, int width, int height) {
+    public void resize(int width, int height) {
         this.width = width;
         this.height = height;
 

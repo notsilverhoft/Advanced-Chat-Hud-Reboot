@@ -17,12 +17,12 @@ import io.github.darkkronicle.advancedchathud.tabs.AbstractChatTab;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.ChatHud;
 import net.minecraft.client.gui.hud.ChatHudLine;
 import net.minecraft.client.util.ChatMessages;
 import net.minecraft.text.OrderedText;
-import net.minecraft.text.Style;
 import net.minecraft.util.math.MathHelper;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -31,7 +31,6 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.Iterator;
 import java.util.List;
@@ -67,33 +66,18 @@ public abstract class MixinChatHud implements IChatHud {
 
     @Inject(at = @At("HEAD"), method = "scroll", cancellable = true)
     private void scroll(int amount, CallbackInfo ci) {
-        // Only scroll if nothing is focused
         if (WindowManager.getInstance().getSelected() != null) {
             ci.cancel();
         }
     }
 
-    @Inject(at = @At("HEAD"), method = "render", cancellable = true)
-    private void render(DrawContext context, int currentTick, int mouseX, int mouseY, boolean focused, CallbackInfo ci) {
-        // Ignore rendering vanilla chat if disabled
+    @Inject(at = @At("HEAD"),
+            method = "render(Lnet/minecraft/client/gui/DrawContext;Lnet/minecraft/client/font/TextRenderer;IIIZZ)V",
+            cancellable = true)
+    private void render(DrawContext context, TextRenderer textRenderer, int currentTick,
+                        int mouseX, int mouseY, boolean focused, boolean insert, CallbackInfo ci) {
         if (!HudConfigStorage.General.VANILLA_HUD.config.getBooleanValue()) {
             ci.cancel();
-        }
-    }
-
-    @Inject(at = @At("HEAD"), method = "getTextStyleAt", cancellable = true)
-    public void getTextHead(double x, double y, CallbackInfoReturnable<Style> cir) {
-        // Ignore checking vanilla chat for hovered text if disabled
-        if (!HudConfigStorage.General.VANILLA_HUD.config.getBooleanValue()) {
-            cir.setReturnValue(WindowManager.getInstance().getText(x, y));
-        }
-    }
-
-    @Inject(at = @At("RETURN"), method = "getTextStyleAt", cancellable = true)
-    public void getTextReturn(double x, double y, CallbackInfoReturnable<Style> cir) {
-        // If vanilla chat didn't find any text, search on our own windows
-        if (cir.getReturnValue() == null) {
-            cir.setReturnValue(WindowManager.getInstance().getText(x, y));
         }
     }
 
@@ -116,7 +100,6 @@ public abstract class MixinChatHud implements IChatHud {
 
     @Override
     public void removeMessage(ChatMessage remove) {
-        // Reset messages that exist
         setTab(this.tab);
     }
 

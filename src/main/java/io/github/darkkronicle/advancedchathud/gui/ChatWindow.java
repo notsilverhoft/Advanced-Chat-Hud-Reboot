@@ -28,6 +28,7 @@ import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.text.StringVisitable;
 import net.minecraft.text.Style;
 import org.joml.Matrix3x2f;
 import org.joml.Matrix3x2fStack;
@@ -754,10 +755,7 @@ public class ChatWindow {
                     if (renderRight) {
                         truestX = trueX - (getScaledWidth() - line.getWidth()) + headOffset() + HudConfigStorage.General.RIGHT_PAD.config.getIntegerValue() + HudConfigStorage.General.LEFT_PAD.config.getIntegerValue();
                     }
-                    return this.client
-                            .textRenderer
-                            .getTextHandler()
-                            .getStyleAt(line.getText(), (int) truestX);
+                    return getStyleAt(line.getText(), (int) truestX);
                 }
             }
             if (lineHeight >= scrolledHeight) {
@@ -776,6 +774,22 @@ public class ChatWindow {
             lineHeight += HudConfigStorage.General.MESSAGE_SPACE.config.getIntegerValue();
         }
         return null;
+    }
+
+    private Style getStyleAt(Text text, int x) {
+        net.minecraft.client.font.TextHandler handler = this.client.textRenderer.getTextHandler();
+        int charCount = handler.trimToWidth((StringVisitable) text, x, Style.EMPTY).getString().length();
+        int[] pos = {0};
+        Style[] result = {null};
+        text.visit((style, str) -> {
+            if (pos[0] + str.length() > charCount) {
+                result[0] = style;
+                return java.util.Optional.of(style);
+            }
+            pos[0] += str.length();
+            return java.util.Optional.empty();
+        }, Style.EMPTY);
+        return result[0];
     }
 
     public ChatMessage getMessage(double mouseX, double mouseY) {
@@ -866,7 +880,7 @@ public class ChatWindow {
         }
         this.client
                 .getSoundManager()
-                .play(PositionedSoundInstance.master(SoundEvents.UI_BUTTON_CLICK, 1.0F));
+                .play(PositionedSoundInstance.ui(SoundEvents.UI_BUTTON_CLICK, 1.0F));
         return true;
     }
 

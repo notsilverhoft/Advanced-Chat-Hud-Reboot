@@ -112,7 +112,7 @@ public class GuiTabEditor extends GuiConfigsBase implements IClosable {
     }
 
     @Override
-    public void resize(MinecraftClient mc, int width, int height) {
+    public void resize(int width, int height) {
         this.width = width;
         this.height = height;
 

@@ -8,6 +8,7 @@
 package io.github.darkkronicle.advancedchathud.gui;
 
 import fi.dy.masa.malilib.gui.button.ButtonBase;
+import fi.dy.masa.malilib.render.GuiContext;
 import fi.dy.masa.malilib.util.InfoUtils;
 import fi.dy.masa.malilib.util.StringUtils;
 import io.github.darkkronicle.advancedchatcore.chat.AdvancedChatScreen;
@@ -117,7 +118,7 @@ public class HudSection extends AdvancedChatScreenSection {
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float deltaTicks) {
         if (menu != null) {
-            menu.render(context, mouseX, mouseY, true);
+            menu.render(GuiContext.fromGuiGraphics(context), mouseX, mouseY, true);
         }
     }
 

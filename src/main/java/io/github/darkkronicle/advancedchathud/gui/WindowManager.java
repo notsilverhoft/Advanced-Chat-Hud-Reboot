@@ -23,6 +23,7 @@ import io.github.darkkronicle.advancedchathud.itf.IChatHud;
 import io.github.darkkronicle.advancedchathud.tabs.AbstractChatTab;
 import io.github.darkkronicle.advancedchathud.tabs.CustomChatTab;
 import io.github.darkkronicle.advancedchathud.tabs.MainChatTab;
+import fi.dy.masa.malilib.render.GuiContext;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -121,7 +122,7 @@ public class WindowManager implements IRenderer, ResolutionEventHandler {
     }
 
     @Override
-    public void onRenderGameOverlayPost(DrawContext drawContext) {
+    public void onRenderGameOverlayPost(GuiContext drawContext) {
         boolean isFocused = isChatFocused();
         int ticks = client.inGameHud.getTicks();
         if (!HudConfigStorage.General.RENDER_IN_OTHER_GUI.config.getBooleanValue() && !isFocused && client.currentScreen != null) {
@@ -270,7 +271,9 @@ public class WindowManager implements IRenderer, ResolutionEventHandler {
         }
     
         Style style = over.getText(mouseX, mouseY);
-        if (style != null && screen.handleTextClick(style)) {
+        if (style != null && style.getClickEvent() != null
+                && screen instanceof AdvancedChatScreen advancedScreen) {
+            advancedScreen.fireClickEvent(style.getClickEvent());
             return true;
         }
     
